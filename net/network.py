@@ -1,4 +1,7 @@
+from __future__ import print_function
 import os
+os.environ['KERAS_BACKEND'] = 'tensorflow'
+
 import numpy as np
 import cPickle
 import h5py
@@ -6,7 +9,6 @@ import time
 import sys
 import matplotlib.pyplot as plt
 np.random.seed(1337)
-print 'ads'
 
 from keras.utils import np_utils
 from keras.utils.visualize_util import plot
@@ -18,10 +20,9 @@ from keras.models import model_from_json
 from keras.layers import Convolution3D, MaxPooling3D
 
 from src.config import config
-print 'ads'
+
 def cnn_3d_net():
     model = Sequential()
-    print('begin')
     model.add(Convolution3D(nb_filter=config.FILTERS[0],
                             kernel_dim1=config.CONV_1[0],
                             kernel_dim2=config.CONV_1[1],
@@ -58,52 +59,10 @@ def cnn_3d_net():
     print(model.summary())
     return model
 
-def train(model, epoches):
-
+def train():
+    results = []
     tensorBoard = TensorBoard(log_dir=config.LOG_DIR, histogram_freq=10, write_graph=True)
     checkpointer = ModelCheckpoint(config.WEIGTH_PATH,verbose=1, save_best_only=True)
     earlystopping = EarlyStopping(monitor='val_loss', patience=20)
     start_time = time.time()
-    print(start_time)
-    history = model.fit(X_train,Y_train,
-                        batch_size=config.BATCH_SIZE,
-                        nb_epoch=epoches,
-                        validation_split=config.VAL_PERCENT,
-                        shuffle=True,
-                        callbacks=[tensorBoard,checkpointer,earlystopping])
-    plot_curve(start_time, epoches, history)
-
-def plot_curve(start_time, epoches, history):
-    average_time_per_epoch = (time.time() - start_time) / epoches
-    results = []
-    results.append((history, average_time_per_epoch))
-
-    models = config.DEVICE
-    #===========plot
-    plt.style.use('ggplot')
-    ax1 = plt.subplot2grid((2, 2), (0, 0))
-    ax1.set_title('Accuracy')
-    ax1.set_ylabel('Train Loss')
-    ax1.set_xlabel('Epochs')
-    ax2 = plt.subplot2grid((2, 2), (1, 0))
-    ax2.set_title('Loss')
-    ax2.set_ylabel('Validation Loss')
-    ax2.set_xlabel('Epochs')
-    ax3 = plt.subplot2grid((2, 2), (0, 1), rowspan=2)
-    ax3.set_title('Time')
-    ax3.set_ylabel('Seconds')
-    for mode, result in zip(modes, results):
-        ax1.plot(result[0].epoch, result[0].history['loss'], label=mode)
-        ax2.plot(result[0].epoch, result[0].history['val_loss'], label=mode)
-    ax1.legend()
-    ax2.legend()
-    ax3.bar(np.arange(len(results)), [x[1] for x in results],
-            tick_label=modes, align='center')
-    plt.tight_layout()
-    plt.savefig(config.CURVE_PATH, dpi=200)
-
-
-def main():
-    model = cnn_3d_net()
-    train(model, epoches=1000)
-main()
+    history = model.fit(X_train,Y_train , batch_size=batch_size, nb_epoch=epoches ,validation_split = validation_split,shuffle = True, callbacks=[tensorBoard,checkpointer,earlystopping])
