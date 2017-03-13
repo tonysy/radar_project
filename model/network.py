@@ -73,15 +73,18 @@ def train(model, epoches):
     X_train -= np.mean(X_train)
     X_train /= np.max(X_train)
 
+    X_train_new, X_val_new, y_train_new, y_val_new = train_test_split(X_train, Y_train, test_size=config.VAL_PERCENT, random_state=4)
+
     tensorBoard = TensorBoard(log_dir=config.LOG_DIR, histogram_freq=10, write_graph=True)
     checkpointer = ModelCheckpoint(config.WEIGTH_PATH,verbose=1, save_best_only=True)
     earlystopping = EarlyStopping(monitor='val_acc', patience=20)
     start_time = time.time()
     print(start_time)
-    history = model.fit(X_train,Y_train,
+    history = model.fit(X_train_new,
+                        y_train_new,
+                        validation_data=(X_val_new, y_val_new),
                         batch_size=config.BATCH_SIZE,
                         nb_epoch=epoches,
-                        validation_split=config.VAL_PERCENT,
                         shuffle=True,
                         callbacks=[tensorBoard,checkpointer,earlystopping])
     plot_curve(start_time, epoches, history)
