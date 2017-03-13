@@ -8,7 +8,7 @@ def file_dict():
     rename all files from prefix+id.txt into id.txt. such as : backward1.txt -->00001.txt
     :return filename_dict: contains {'gesture name: file_list'}
     """
-    path = './data_0225'
+    path = config.DATASET_PATH
     filename_dict = {'backward':[],'forward':[],'rotate':[],'static':[]}
     for root, dirs, files in os.walk(path):
         for item in files:
@@ -44,7 +44,7 @@ def data_to_image(filename_dict):
         while flag:
             if idx < total:
                 sample = []
-                for i in range(14):
+                for i in range(config.FRAME_LEN):
                     output = txt_to_wh_matrix(filename_dict[key][idx])
                     sample.append(output)
                     idx += 1

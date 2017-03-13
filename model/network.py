@@ -20,6 +20,7 @@ from keras.models import model_from_json
 from keras.layers import Convolution3D, MaxPooling3D
 
 from src.config import config
+from src.data_loader import *
 
 def cnn_3d_net():
     model = Sequential()
@@ -27,7 +28,7 @@ def cnn_3d_net():
                             kernel_dim1=config.CONV_1[0],
                             kernel_dim2=config.CONV_1[1],
                             kernel_dim3=config.CONV_1[2],
-                            input_shape=(1,14,32,120),
+                            input_shape=(1,config.FRAME_LEN,32,120),
                             activation='relu',
                             dim_ordering="th"))
     print("Load Conv1")
@@ -61,9 +62,20 @@ def cnn_3d_net():
 
 def train(model, epoches):
 
+    # load data
+    filename_dict = file_dict()
+    dataset_data, dataset_label = data_to_image(filename_dict)
+    print(dataset_data.shape)
+    X_train = dataset_data
+    Y_train = np_utils.to_categorical(dataset_label, config.NUM_CLASSES)
+    # ========Preprocessing===
+    X_train = X_train.astype('float32')
+    X_train -= np.mean(X_train)
+    X_train /= np.max(X_train)
+
     tensorBoard = TensorBoard(log_dir=config.LOG_DIR, histogram_freq=10, write_graph=True)
     checkpointer = ModelCheckpoint(config.WEIGTH_PATH,verbose=1, save_best_only=True)
-    earlystopping = EarlyStopping(monitor='val_loss', patience=20)
+    earlystopping = EarlyStopping(monitor='val_acc', patience=20)
     start_time = time.time()
     print(start_time)
     history = model.fit(X_train,Y_train,
@@ -79,7 +91,7 @@ def plot_curve(start_time, epoches, history):
     results = []
     results.append((history, average_time_per_epoch))
 
-    models = config.DEVICE
+    modes = config.DEVICE
     #===========plot
     plt.style.use('ggplot')
     ax1 = plt.subplot2grid((2, 2), (0, 0))
@@ -94,7 +106,7 @@ def plot_curve(start_time, epoches, history):
     ax3.set_title('Time')
     ax3.set_ylabel('Seconds')
     for mode, result in zip(modes, results):
-        ax1.plot(result[0].epoch, result[0].history['loss'], label=mode)
+        ax1.plot(result[0].epoch, result[0].history['val_acc'], label=mode)
         ax2.plot(result[0].epoch, result[0].history['val_loss'], label=mode)
     ax1.legend()
     ax2.legend()
