@@ -3,6 +3,7 @@
 *.caffemodel
 data
 logs
+src/scripts
 
 # Compiled/cached Python
 __pycache__/
