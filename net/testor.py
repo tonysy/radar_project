@@ -15,12 +15,13 @@ class Gesture_Testor(object):
     def __init__(self):
         super(Gesture_Testor, self).__init__()
         self.optimizer = RMSprop(lr=0.0005)
-        self.label = -1
+        self.model = self.load_model()
     def load_model(self):
-        self.model = model_from_json(open(config.MODEL_JSON_PATH).read())
-        self.model.compile(loss='categorical_crossentropy', optimizer=self.optimizer, metrics=['mse', 'accuracy'])
-        self.model.load_weights(config.WEIGTH_PATH)
+        model = model_from_json(open(config.MODEL_JSON_PATH).read())
+        model.compile(loss='categorical_crossentropy', optimizer=self.optimizer, metrics=['mse', 'accuracy'])
+        model.load_weights(config.WEIGTH_PATH)
+        return model
     def test(self, X_test):
-        self.load_model()
-        self.label = self.model.predict_classes(X_test, batch_size=1,verbose=1)
-        print(self.label)
+        label = self.model.predict_classes(X_test, batch_size=1,verbose=1)
+        print('Predicet results:',label[0])
+        return label[0]
