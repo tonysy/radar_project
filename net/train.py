@@ -63,21 +63,23 @@ def cnn_3d_net():
 def train(model, epoches):
 
     # load data
-    filename_dict = file_dict()
-    dataset_data, dataset_label = data_to_image(filename_dict)
-    print(dataset_data.shape)
-    X_train = dataset_data
-    Y_train = np_utils.to_categorical(dataset_label, config.NUM_CLASSES)
-    # ========Preprocessing===
+    filename_dict_train = file_dict(config.DATASET_PATH)
+    dataset_data_train, dataset_label_train = data_to_image(filename_dict_train)
+    print(dataset_data_train.shape)
+    X_train = dataset_data_train
+    Y_train = np_utils.to_categorical(dataset_label_train, config.NUM_CLASSES)
     X_train = X_train.astype('float32')
-    X_train -= np.mean(X_train)
-    X_train /= np.max(X_train)
+
+    # ========Preprocessing===
+
+    X_train -= config.DATA_MEAN
+    X_train /= config.DATA_MAX
+
 
     X_train_new, X_val_new, y_train_new, y_val_new = train_test_split(X_train, Y_train, test_size=config.VAL_PERCENT, random_state=4)
 
-    tensorBoard = TensorBoard(log_dir=config.LOG_DIR, histogram_freq=10, write_graph=True)
     checkpointer = ModelCheckpoint(config.WEIGTH_PATH,verbose=1, save_best_only=True)
-    earlystopping = EarlyStopping(monitor='val_acc', patience=20)
+    earlystopping = EarlyStopping(monitor='val_acc', patience=10)
     start_time = time.time()
     print(start_time)
     history = model.fit(X_train_new,
@@ -86,8 +88,11 @@ def train(model, epoches):
                         batch_size=config.BATCH_SIZE,
                         nb_epoch=epoches,
                         shuffle=True,
-                        callbacks=[tensorBoard,checkpointer,earlystopping])
+                        callbacks=[checkpointer,earlystopping])
     plot_curve(start_time, epoches, history)
+
+
+
 
 def plot_curve(start_time, epoches, history):
     average_time_per_epoch = (time.time() - start_time) / epoches

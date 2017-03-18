@@ -1,7 +1,9 @@
 # project ignore
 data/
+data_split/
 logs/
 src/scripts/
+net/train_split.py
 # Compiled Object files
 *.slo
 *.lo

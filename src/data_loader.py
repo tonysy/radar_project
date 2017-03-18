@@ -5,12 +5,11 @@ from src.config import config
 from sklearn.model_selection import train_test_split
 
 
-def file_dict():
+def file_dict(path):
     """
     rename all files from prefix+id.txt into id.txt. such as : backward1.txt -->00001.txt
     :return filename_dict: contains {'gesture name: file_list'}
     """
-    path = config.DATASET_PATH
     filename_dict = {'backward':[],'forward':[],'rotate':[],'static':[]}
     for root, dirs, files in os.walk(path):
         for item in files:
