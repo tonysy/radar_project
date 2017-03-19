@@ -1,4 +1,4 @@
-# Lidar Gesture Recognization
+# Radar Gesture Recognization
 
 ## Requirements
 - Keras
@@ -22,7 +22,7 @@ Please `from net.testor import Gesture_Testor` when you want to predict the new 
 We have already pack up the test process into a class, and you can directly use
 `label = Gesture_Testor().test(test_data)` to get the label belong to the test_data.
 
-The test_data in `test.py` is just the first sample of the train dataset.
+The test_data in `test_new.py` is just the first sample of the train dataset.
 
 ## Then
 if you have any problem, feel free to contact with me by issue or email.
