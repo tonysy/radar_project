@@ -30,7 +30,7 @@ def cnn_3d_net():
                             kernel_dim3=config.CONV_1[2],
                             input_shape=(1,config.FRAME_LEN,32,120),
                             activation='relu',
-                            dim_ordering="th"))
+                            dim_ordering="th"), name='conv_1')
     print("Load Conv1")
     model.add(MaxPooling3D(pool_size=(config.POOL_1[0],config.POOL_1[1],config.POOL_1[2]),dim_ordering="th"))
     print("Load pool1")

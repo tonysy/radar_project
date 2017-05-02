@@ -3,7 +3,8 @@ import numpy as np
 from net.testor import Gesture_Testor
 from src.data_loader import *
 from src.config import config
-
+from src.get_intermediate_layer import get_intermediate_layer
+from net.train import cnn_3d_net
 def load_data():
     filename_dict = file_dict(config.DATASET_PATH)
     dataset_data, dataset_label = data_to_image(filename_dict)
@@ -24,3 +25,6 @@ test_data /= config.DATA_MAX
 
 gesture_testor = Gesture_Testor()
 gesture_testor.test(test_data)
+
+cnn_3d_net()
+print get_intermediate_layer(test_data)
