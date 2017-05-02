@@ -1,4 +1,6 @@
 from __future__ import print_function
+import sys
+sys.path.insert(0, '/home/syzhang/Documents/radar_project/')
 import numpy as np
 from net.testor import Gesture_Testor
 from src.data_loader import *
@@ -26,5 +28,7 @@ test_data /= config.DATA_MAX
 gesture_testor = Gesture_Testor()
 gesture_testor.test(test_data)
 
-cnn_3d_net()
-print get_intermediate_layer(test_data)
+# get intermediate layers
+layer_name = "convolution3d_1"
+output = get_intermediate_layer(layer_name, test_data)
+print(output)
